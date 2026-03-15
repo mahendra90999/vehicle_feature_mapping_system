@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,6 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 	
 	@Autowired
@@ -47,6 +49,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
         	.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers("/api/login", "/api/signup","/api/refresh-token","/swagger-ui.html","/actuator/**" ,"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+            .requestMatchers("/mappings","/vehicles","/features","/countries").hasAllRoles("USER","ADMIN")
+            .requestMatchers("/mappings/add","/vehicles/add","/features/add","/countries/add","/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
         .sessionManagement(session ->
