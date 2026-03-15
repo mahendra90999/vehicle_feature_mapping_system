@@ -9,17 +9,15 @@ import com.example.jpa.jpa1.Repositoroy.CredentialRepository;
 
 @Service
 public class AuthService {
-	
+
 	@Autowired
-    private CredentialRepository credentialRepository;
+	private CredentialRepository credentialRepository;
 
-	
 	public void promoteUser(String username) {
-	    Credential user = credentialRepository.findByUsername(username)
-	            .orElseThrow();
+		Credential user = credentialRepository.findByUsername(username).orElseThrow();
 
-	    user.setRole(Role.ADMIN);
-	    credentialRepository.save(user);
+		user.setRole(Role.ADMIN);
+		credentialRepository.save(user);
 	}
 
 }

@@ -27,86 +27,78 @@ import com.example.jpa.jpa1.Service.RefreshTokenService;
 @RequestMapping("/api")
 public class AuthController {
 	@Autowired
-    private AuthenticationManager authenticationManager;
+	private AuthenticationManager authenticationManager;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
-    @Autowired
-    private JwtUtil jwtUtil;
-    
-    @Autowired
+
+	@Autowired
+	private JwtUtil jwtUtil;
+
+	@Autowired
 	private CredentialRepository credentialRepository;
-    
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-    
-    @Autowired
-    private AuthService authService;
-    
+
+	@Autowired
+	private RefreshTokenService refreshTokenService;
+
+	@Autowired
+	private AuthService authService;
+
 //    login page
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody Credential credential) {
-    	try {
-    		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credential.getUsername(),credential.getPassword()));			
+	@PostMapping("/login")
+	public ResponseEntity<AuthResponse> login(@RequestBody Credential credential) {
+		try {
+			authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(credential.getUsername(), credential.getPassword()));
 		} catch (Exception e) {
-			 return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().build();
 		}
-    	
-    	Credential user = credentialRepository
-                .findByUsername(credential.getUsername())
-                .orElseThrow();
 
-    	// 🔴 ROLE VALIDATION
-        if (!user.getRole().equals(credential.getRole())) {
-            return ResponseEntity.status(403).body(new AuthResponse(null, "You cannot login with this role"));
-        }
-    	
-    	String accesstoken = jwtUtil.generateToken(user.getUsername(),user.getRole().name());
-    	
-    	RefreshToken refreshToken = refreshTokenService.createRefreshToken(credential.getUsername());
-    	String refrestokenstring = refreshToken.getToken();
-    	AuthResponse response = new AuthResponse(accesstoken, refrestokenstring);
+		Credential user = credentialRepository.findByUsername(credential.getUsername()).orElseThrow();
 
-    	
-    	return ResponseEntity.ok(response);
-    }
-    
-    
-    
+//    	// ROLE VALIDATION
+//        if (!user.getRole().equals(credential.getRole())) {
+//            return ResponseEntity.status(403).body(new AuthResponse(null, "You cannot login with this role"));
+//        }
+
+		String accesstoken = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+
+		RefreshToken refreshToken = refreshTokenService.createRefreshToken(credential.getUsername());
+		String refrestokenstring = refreshToken.getToken();
+		AuthResponse response = new AuthResponse(accesstoken, refrestokenstring);
+
+		return ResponseEntity.ok(response);
+	}
+
 //    for signup
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody CredentialDto dto) {
-        Credential user = new Credential();
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));  // <-- encode here
-        user.setRole(Role.USER);
-        credentialRepository.save(user);
-        return ResponseEntity.ok("User registered");
-    }
-    
-    
+	@PostMapping("/signup")
+	public ResponseEntity<String> signup(@RequestBody CredentialDto dto) {
+		Credential user = new Credential();
+		user.setUsername(dto.getUsername());
+		user.setPassword(passwordEncoder.encode(dto.getPassword())); // <-- encode here
+		user.setRole(Role.USER);
+		credentialRepository.save(user);
+		return ResponseEntity.ok("User registered");
+	}
+
 //    to generate new access token
-    @PostMapping("/refresh-token")
-    public ApiResponseDto<String> refreshToken(@RequestBody RefreshTokenDto  request) {
+	@PostMapping("/refresh-token")
+	public ApiResponseDto<String> refreshToken(@RequestBody RefreshTokenDto request) {
 
-        RefreshToken refreshToken = refreshTokenService.verifyToken(request.getRefreshToken());
-        
-        Credential user = credentialRepository
-                .findByUsername(refreshToken.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+		RefreshToken refreshToken = refreshTokenService.verifyToken(request.getRefreshToken());
 
-        
-        String newAccessToken = jwtUtil.generateToken(user.getUsername(),user.getRole().name());
+		Credential user = credentialRepository.findByUsername(refreshToken.getUsername())
+				.orElseThrow(() -> new RuntimeException("User not found"));
 
-        return new ApiResponseDto<>(true, "New access token generated", newAccessToken);
-    }
-    
-    
+		String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+
+		return new ApiResponseDto<>(true, "New access token generated", newAccessToken);
+	}
+
 //    for pramoting a user to admin
-    @PostMapping("/admin/promote/{username}")
-    public ResponseEntity<String> promoteUser(@PathVariable String username) {
-        authService.promoteUser(username);
-        return ResponseEntity.ok("User promoted to ADMIN");
-    }
+	@PostMapping("/admin/promote/{username}")
+	public ResponseEntity<String> promoteUser(@PathVariable String username) {
+		authService.promoteUser(username);
+		return ResponseEntity.ok("User promoted to ADMIN");
+	}
 }

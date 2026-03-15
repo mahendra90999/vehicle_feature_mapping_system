@@ -21,63 +21,54 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-	
+
 	@Autowired
 	private JwtFilter jwtFilter;
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-	
+
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-		http
-		.cors(Customizer.withDefaults()) 
-		.csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-        	.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/api/login", "/api/signup","/api/refresh-token","/swagger-ui.html","/actuator/**" ,"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-            .requestMatchers("/mappings","/vehicles","/features","/countries").hasAllRoles("USER","ADMIN")
-            .requestMatchers("/mappings/add","/vehicles/add","/features/add","/countries/add","/api/admin/**").hasRole("ADMIN")
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
-		
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.requestMatchers("/api/login", "/api/signup", "/api/refresh-token", "/swagger-ui.html", "/actuator/**",
+						"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
+				.permitAll().requestMatchers("/mappings", "/vehicles", "/features", "/countries")
+				.hasAllRoles("USER", "ADMIN")
+				.requestMatchers("/mappings/add", "/vehicles/add", "/features/add", "/countries/add", "/api/admin/**")
+				.hasRole("ADMIN").anyRequest().authenticated())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-		
 		return http.build();
 	}
-	
+
 	@Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+	public CorsConfigurationSource corsConfigurationSource() {
 
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
 
-        return source;
-    }
+		return source;
+	}
 
-	
 }
