@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,8 +16,14 @@ import com.example.jpa.jpa1.Dto.ApiResponseDto;
 public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(DuplicateMappingException.class)
-    public ResponseEntity<String> handleDuplicate(DuplicateMappingException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateMappingException ex) {
+		Map<String, Object> error = new HashMap<>();
+		error.put("timestamp", LocalDateTime.now());
+		error.put("status", 400);
+	    error.put("error", "Bad Request");
+	    error.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
 	
 	@ExceptionHandler(ResourceNotFoundException.class)
@@ -40,4 +47,5 @@ public class GlobalExceptionHandler {
                 .data(null)
                 .build();
     }
+	
 }

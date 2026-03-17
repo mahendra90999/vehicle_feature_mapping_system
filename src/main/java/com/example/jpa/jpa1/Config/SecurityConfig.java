@@ -46,7 +46,7 @@ public class SecurityConfig {
 				.requestMatchers("/api/login", "/api/signup", "/api/refresh-token", "/swagger-ui.html", "/actuator/**",
 						"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
 				.permitAll().requestMatchers("/mappings", "/vehicles", "/features", "/countries")
-				.hasAllRoles("USER", "ADMIN")
+				.hasAnyRole("USER", "ADMIN")
 				.requestMatchers("/mappings/add", "/vehicles/add", "/features/add", "/countries/add", "/api/admin/**")
 				.hasRole("ADMIN").anyRequest().authenticated())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

@@ -1,5 +1,6 @@
 package com.example.jpa.jpa1.Dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +16,12 @@ import lombok.Setter;
 @Builder
 public class MappingDto {
 	
+	@NotBlank
 	private int feature_id;
+	@NotBlank
 	private int vehicle_id;
+	@NotBlank
 	private int country_id;
+	@NotBlank
 	private String status;
 }

@@ -29,7 +29,7 @@ public class MappingController {
 	MappingService mappingService;
 	
 	@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("/add")
+	@PostMapping("/add")
 	public MappingDto addData(@RequestBody MappingDto mappingDto) {	
 		return mappingService.addData(mappingDto);
 	}
