@@ -1,6 +1,6 @@
 package com.example.jpa.jpa1.Dto;
 
-import jakarta.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,10 +14,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-public class CredentialDto {
-	
-	@NotBlank
+public class CredentialRDto {
+
 	private String username;
-	@NotBlank
 	private String password;
 }

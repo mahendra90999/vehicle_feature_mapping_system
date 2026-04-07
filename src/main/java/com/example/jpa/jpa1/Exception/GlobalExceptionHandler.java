@@ -48,4 +48,20 @@ public class GlobalExceptionHandler {
                 .build();
     }
 	
+	 @ExceptionHandler(RuntimeException.class)
+	    public ResponseEntity<String> handleException(RuntimeException ex) {
+	        return ResponseEntity.badRequest().body(ex.getMessage());
+	    }
+	 
+	 @ExceptionHandler(DuplicateUserException.class)
+	    public ResponseEntity<Map<String, Object>> handleUserDuplicate(DuplicateUserException ex) {
+			Map<String, Object> error = new HashMap<>();
+			error.put("timestamp", LocalDateTime.now());
+			error.put("status", 400);
+		    error.put("error", "Bad Request");
+		    error.put("message", ex.getMessage());
+
+	        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+	    }
+	
 }
