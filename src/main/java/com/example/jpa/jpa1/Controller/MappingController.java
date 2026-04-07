@@ -30,7 +30,7 @@ public class MappingController {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/add")
-	public MappingDto addData(@RequestBody MappingDto mappingDto) {	
+	public ApiResponseDto<MappingDto> addData(@RequestBody MappingDto mappingDto) {	
 		return mappingService.addData(mappingDto);
 	}
 	

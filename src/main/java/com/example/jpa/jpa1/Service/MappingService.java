@@ -45,7 +45,7 @@ public class MappingService {
 	ModelMapper modelMapper;
 
 	@CacheEvict(value = "mappingCache", allEntries = true)
-	public MappingDto addData(MappingDto mappingDto) {
+	public ApiResponseDto<MappingDto> addData(MappingDto mappingDto) {
 
 		Vehicle vehicle = vehicleDataRepository.findById(mappingDto.getVehicle_id()).orElseThrow();
 		Feature feature = featureDataRepository.findById(mappingDto.getFeature_id()).orElseThrow();
@@ -64,7 +64,7 @@ public class MappingService {
 
 		MappingDto mappingDtoObje = modelMapper.map(mappingobj, MappingDto.class);
 
-		return mappingDtoObje;
+		return new ApiResponseDto<>(true, "Mapping saved", mappingDtoObje);
 	}
 
 //	public ApiResponseDto<MappingStringDto> getData(InfoDto infoDto) {
