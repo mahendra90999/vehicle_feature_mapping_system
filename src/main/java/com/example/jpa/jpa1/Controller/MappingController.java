@@ -1,5 +1,7 @@
 package com.example.jpa.jpa1.Controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 public class MappingController {
 
 	private final MappingService mappingService;
+    private static final Logger log = LoggerFactory.getLogger(MappingController.class);
+
 	
 	public MappingController(MappingService mappingService) {
 		this.mappingService = mappingService;
@@ -33,7 +37,16 @@ public class MappingController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/add")
 	public ApiResponseDto<MappingDto> addData(@RequestBody MappingDto mappingDto) {	
-		return mappingService.addData(mappingDto);
+		log.info("Adding new mapping - Vehicle: {}, Feature: {}, Country: {}", 
+                mappingDto.getVehicle_id(), mappingDto.getFeature_id(), mappingDto.getCountry_id());
+       try {
+           ApiResponseDto<MappingDto> result = mappingService.addData(mappingDto);
+           log.info("Mapping added successfully.. ");
+           return result;
+       } catch (Exception e) {
+           log.error("Failed to add mapping: {}", e.getMessage(), e);
+           throw e;
+       }
 	}
 	
 	
@@ -43,7 +56,17 @@ public class MappingController {
 	        @RequestParam(defaultValue = "5") int size,@RequestParam(defaultValue = "mappingId") String sortBy,
 	        @RequestParam(defaultValue = "desc") String direction) {	
 		
-		return mappingService.getData(infoDto, page, size, sortBy, direction);
+		log.info("Fetching mappings - Vehicle: {}, Feature: {}, Country: {}, Page: {}, Size: {}", 
+                infoDto.getVehicle_name(), infoDto.getFeature_name(), infoDto.getCountry_name(), page, size);
+       try {
+           ApiResponseDto<PageResponse<MappingStringDto>> result = 
+               mappingService.getData(infoDto, page, size, sortBy, direction);
+           log.debug("Successfully retrieved mappings");
+           return result;
+       } catch (Exception e) {
+           log.error("Failed to retrieve mappings: {}", e.getMessage(), e);
+           throw e;
+       }
 	}
 	
 }

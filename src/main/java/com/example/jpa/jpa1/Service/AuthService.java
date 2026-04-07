@@ -22,19 +22,14 @@ import com.example.jpa.jpa1.Security.JwtUtil;
 @Service
 public class AuthService {
 
-	
 	private final JwtUtil jwtUtil;
 
-	
 	private final AuthenticationManager authenticationManager;
 
-	
 	private final CredentialRepository credentialRepository;
 
-	
 	private final RefreshTokenService refreshTokenService;
 
-	
 	private final PasswordEncoder passwordEncoder;
 
 //	constroctore
@@ -52,33 +47,54 @@ public class AuthService {
 	private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
 	public void promoteUser(String username) {
-		Credential user = credentialRepository.findByUsername(username).orElseThrow();
+		log.info("Attempting to promote user to ADMIN: {}", username);
+		try {
+			Credential user = credentialRepository.findByUsername(username).orElseThrow(() -> {
+				log.error("User not found for promotion: {}", username);
+				return new RuntimeException("User not found");
+			});
 
-		user.setRole(Role.ADMIN);
-		credentialRepository.save(user);
+			user.setRole(Role.ADMIN);
+			credentialRepository.save(user);
+			log.info("User successfully promoted to ADMIN: {}", username);
+		} catch (Exception e) {
+			log.error("Failed to promote user {}: {}", username, e.getMessage());
+			throw e;
+		}
 	}
 
 	public AuthResponse login(CredentialDto credential) {
+		log.info("Login attempt for username: {}", credential.getUsername());
 		try {
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(credential.getUsername(), credential.getPassword()));
+
+			log.debug("Authentication successful for user: {}", credential.getUsername());
 		} catch (Exception e) {
+			log.warn("Authentication failed for username: {}", credential.getUsername());
 			throw new RuntimeException("Invalid username or password");
 		}
 
-		Credential user = credentialRepository.findByUsername(credential.getUsername())
-				.orElseThrow(() -> new RuntimeException("User not found"));
+		Credential user = credentialRepository.findByUsername(credential.getUsername()).orElseThrow(() -> {
+			log.error("User not found after authentication: {}", credential.getUsername());
+			return new RuntimeException("User not found");
+		});
 
 		String accessToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+		log.info("Access token generated for user: {}", user.getUsername());
 
 		RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getUsername());
+		log.info("Refresh token created for user: {}", user.getUsername());
 
 		return new AuthResponse(accessToken, refreshToken.getToken());
 
 	}
 
 	public void signup(CredentialDto dto) {
+		log.info("Signup attempt for username: {}", dto.getUsername());
+
 		if (credentialRepository.findByUsername(dto.getUsername()).isPresent()) {
+			log.warn("Signup failed - Username already exists: {}", dto.getUsername());
 			throw new DuplicateUserException("Username already exists");
 		}
 
@@ -88,19 +104,29 @@ public class AuthService {
 		user.setRole(Role.USER);
 
 		credentialRepository.save(user);
+		log.info("User registered successfully with username: {}", dto.getUsername());
 
 	}
 
 	public ApiResponseDto<String> refreshToken(RefreshTokenDto request) {
 
-		RefreshToken refreshToken = refreshTokenService.verifyToken(request.getRefreshToken());
+		log.debug("Processing refresh token request");
+		try {
+			RefreshToken refreshToken = refreshTokenService.verifyToken(request.getRefreshToken());
+			log.debug("Refresh token verified for user: {}", refreshToken.getUsername());
 
-		Credential user = credentialRepository.findByUsername(refreshToken.getUsername())
-				.orElseThrow(() -> new RuntimeException("User not found"));
+			Credential user = credentialRepository.findByUsername(refreshToken.getUsername()).orElseThrow(() -> {
+				log.error("User not found for token refresh: {}", refreshToken.getUsername());
+				return new RuntimeException("User not found");
+			});
 
-		String newAccesToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
-		log.info("Generating new access token for user: {}", refreshToken.getUsername());
-		return new ApiResponseDto<>(true, "New Access token generated", newAccesToken);
+			String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+			log.info("New access token generated for user: {}", refreshToken.getUsername());
+			return new ApiResponseDto<>(true, "New Access token generated", newAccessToken);
+		} catch (Exception e) {
+			log.error("Token refresh failed: {}", e.getMessage());
+			throw e;
+		}
 
 	}
 
