@@ -24,10 +24,10 @@ import com.example.jpa.jpa1.Entity.Vehicle;
 import com.example.jpa.jpa1.Exception.DuplicateMappingException;
 import com.example.jpa.jpa1.Exception.MappingNotFoundException;
 import com.example.jpa.jpa1.Exception.ResourceNotFoundException;
-import com.example.jpa.jpa1.Repositoroy.CountryDataRepository;
-import com.example.jpa.jpa1.Repositoroy.FeatureDataRepository;
-import com.example.jpa.jpa1.Repositoroy.MappingRepository;
-import com.example.jpa.jpa1.Repositoroy.VehicleDataRepository;
+import com.example.jpa.jpa1.Repository.CountryDataRepository;
+import com.example.jpa.jpa1.Repository.FeatureDataRepository;
+import com.example.jpa.jpa1.Repository.MappingRepository;
+import com.example.jpa.jpa1.Repository.VehicleDataRepository;
 import com.example.jpa.jpa1.Specification.MappingSpecification;
 
 @Service
@@ -107,37 +107,7 @@ public class MappingService {
                  infoDto.getVehicle_name(), infoDto.getFeature_name(), infoDto.getCountry_name(), page, size, sortBy, direction);
         
         try {
-            Vehicle vehicle = null;
-            Feature feature = null;
-            Country country = null;
-            
-            if (infoDto.getVehicle_name() != null && !infoDto.getVehicle_name().isBlank()) {
-                vehicle = vehicleDataRepository.findByVehicleName(infoDto.getVehicle_name())
-                        .orElseThrow(() -> {
-                            log.error("Vehicle not found: {}", infoDto.getVehicle_name());
-                            return new ResourceNotFoundException("Vehicle not found " + infoDto.getVehicle_name());
-                        });
-                log.debug("Vehicle found: {}", vehicle.getVehicleName());
-            }
-            
-            if (infoDto.getFeature_name() != null && !infoDto.getFeature_name().isBlank()) {
-                feature = featureDataRepository.findByFeatureName(infoDto.getFeature_name())
-                        .orElseThrow(() -> {
-                            log.error("Feature not found: {}", infoDto.getFeature_name());
-                            return new ResourceNotFoundException("Feature not found " + infoDto.getFeature_name());
-                        });
-                log.debug("Feature found: {}", feature.getFeatureName());
-            }
-            
-            if (infoDto.getCountry_name() != null && !infoDto.getCountry_name().isBlank()) {
-                country = countryDataRepository.findByCountryName(infoDto.getCountry_name())
-                        .orElseThrow(() -> {
-                            log.error("Country not found: {}", infoDto.getCountry_name());
-                            return new ResourceNotFoundException("Country not found " + infoDto.getCountry_name());
-                        });
-                log.debug("Country found: {}", country.getCountryName());
-            }
-            
+
             Sort sort = direction.equalsIgnoreCase("desc") ?
                     Sort.by(sortBy).descending() :
                     Sort.by(sortBy).ascending();
@@ -146,7 +116,7 @@ public class MappingService {
             log.debug("Pageable configured: Page {}, Size {}, Sort by {} {}", page, size, sortBy, direction);
 
             Page<ApplyMapping> mappings = mappingRepository.findAll(
-                    MappingSpecification.filter(feature, vehicle, country), pageable);
+                    MappingSpecification.filter(infoDto.getFeature_name(),infoDto.getVehicle_name(), infoDto.getCountry_name()), pageable);
             
             log.info("Found {} mappings matching the criteria", mappings.getTotalElements());
 

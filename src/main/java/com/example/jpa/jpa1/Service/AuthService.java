@@ -16,7 +16,7 @@ import com.example.jpa.jpa1.Entity.Credential;
 import com.example.jpa.jpa1.Entity.RefreshToken;
 import com.example.jpa.jpa1.Entity.Role;
 import com.example.jpa.jpa1.Exception.DuplicateUserException;
-import com.example.jpa.jpa1.Repositoroy.CredentialRepository;
+import com.example.jpa.jpa1.Repository.CredentialRepository;
 import com.example.jpa.jpa1.Security.JwtUtil;
 
 @Service

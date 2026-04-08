@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.jpa.jpa1.Entity.Student;
-import com.example.jpa.jpa1.Repositoroy.StudentRepository;
+import com.example.jpa.jpa1.Repository.StudentRepository;
 
 public class StudentDaoImpl implements StudentDao{
 	@Autowired

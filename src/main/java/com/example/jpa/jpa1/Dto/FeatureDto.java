@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class FeatureDto {
 	
-	private String feature_name;
+	private String featureName;
 	private String description;
 	private String category;
 	

@@ -19,7 +19,6 @@ public class VehicleController {
 	
 	@PostMapping("/add")
 	public VehicleDto addData(@RequestBody VehicleDto vehicleDto) {
-		System.out.println(vehicleDto.getVariant());  
 		return vehicleService.addData(vehicleDto);
 	}
 }

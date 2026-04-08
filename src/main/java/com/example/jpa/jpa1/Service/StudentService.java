@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.jpa.jpa1.Dto.StudentDto;
 import com.example.jpa.jpa1.Entity.Student;
-import com.example.jpa.jpa1.Repositoroy.StudentRepository;
+import com.example.jpa.jpa1.Repository.StudentRepository;
 
 
 @Service

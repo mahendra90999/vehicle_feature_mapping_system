@@ -3,7 +3,7 @@ package com.example.jpa.jpa1.Service;
 import org.springframework.stereotype.Service;
 
 import com.example.jpa.jpa1.Entity.Credential;
-import com.example.jpa.jpa1.Repositoroy.CredentialRepository;
+import com.example.jpa.jpa1.Repository.CredentialRepository;
 
 import java.util.List;
 

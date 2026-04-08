@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.jpa.jpa1.Dto.VehicleDto;
 import com.example.jpa.jpa1.Entity.Vehicle;
-import com.example.jpa.jpa1.Repositoroy.VehicleDataRepository;
+import com.example.jpa.jpa1.Repository.VehicleDataRepository;
 
 @Service
 public class VehicleService {
@@ -21,8 +21,8 @@ public class VehicleService {
 	public VehicleDto addData(VehicleDto vehicleDto) {
 		
 		Vehicle vehicle = Vehicle.builder()
-							.companyName(vehicleDto.getCompany_name())
-							.vehicleName(vehicleDto.getVehicle_name())
+							.companyName(vehicleDto.getCompanyName())
+							.vehicleName(vehicleDto.getVehicleName())
 							.variant(vehicleDto.getVariant())
 							.build();
 		

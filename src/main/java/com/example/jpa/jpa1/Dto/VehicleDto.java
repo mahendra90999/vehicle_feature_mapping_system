@@ -18,10 +18,10 @@ public class VehicleDto {
 	
 	@NotBlank(message = "Company name cannot be blank")
 	@JsonProperty("company_name")
-	private String company_name;
+	private String companyName;
 	@NotBlank(message = "Vehicle name cannot be blank")
 	@JsonProperty("vehicle_name")
-	private String vehicle_name;
+	private String vehicleName;
 	@NotBlank(message = "variant name cannot be blank")
 	@JsonProperty("variant")
 	private String variant;

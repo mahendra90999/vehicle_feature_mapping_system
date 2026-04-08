@@ -1,5 +1,7 @@
 package com.example.jpa.jpa1.Dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class CountryDto {
-	
-	private String country_name;
+	@JsonProperty("country_name")
+	private String countryName;
 }

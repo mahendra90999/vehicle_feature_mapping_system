@@ -1,4 +1,4 @@
-package com.example.jpa.jpa1.Repositoroy;
+package com.example.jpa.jpa1.Repository;
 
 import java.util.Optional;
 

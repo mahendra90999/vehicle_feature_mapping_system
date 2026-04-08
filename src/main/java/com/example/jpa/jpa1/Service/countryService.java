@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.jpa.jpa1.Dto.CountryDto;
 import com.example.jpa.jpa1.Entity.Country;
-import com.example.jpa.jpa1.Repositoroy.CountryDataRepository;
+import com.example.jpa.jpa1.Repository.CountryDataRepository;
 
 @Service
 public class countryService {
@@ -20,7 +20,7 @@ public class countryService {
 	public CountryDto addData(CountryDto countryDto) {
 		
 		Country country = modelMapper.map(countryDto, Country.class);
-		country.setCountryName(countryDto.getCountry_name());
+		country.setCountryName(countryDto.getCountryName());
 		
 		Country countryobj = countryDataRepository.save(country);
 		return modelMapper.map(countryobj, CountryDto.class);

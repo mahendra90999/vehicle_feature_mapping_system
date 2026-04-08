@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.example.jpa.jpa1.Entity.RefreshToken;
-import com.example.jpa.jpa1.Repositoroy.RefreshTokenRepository;
+import com.example.jpa.jpa1.Repository.RefreshTokenRepository;
 
 import lombok.RequiredArgsConstructor;
 

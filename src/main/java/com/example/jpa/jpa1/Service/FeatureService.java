@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.jpa.jpa1.Dto.FeatureDto;
 import com.example.jpa.jpa1.Entity.Feature;
-import com.example.jpa.jpa1.Repositoroy.FeatureDataRepository;
+import com.example.jpa.jpa1.Repository.FeatureDataRepository;
 
 @Service
 public class FeatureService {
@@ -21,7 +21,7 @@ public class FeatureService {
 	public FeatureDto addData(FeatureDto featureDto) {
 		
 		Feature feature = Feature.builder()
-							.featureName(featureDto.getFeature_name())
+							.featureName(featureDto.getFeatureName())
 							.category(featureDto.getCategory())
 							.description(featureDto.getDescription())
 							.build();

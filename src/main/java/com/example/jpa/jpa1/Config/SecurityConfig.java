@@ -41,15 +41,21 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
 		http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers("/api/login", "/api/signup", "/api/refresh-token", "/swagger-ui.html", "/actuator/**",
 						"/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
-				.permitAll().requestMatchers("/mappings", "/vehicles", "/features", "/countries")
-				.hasAnyRole("USER", "ADMIN")
+				.permitAll()
 				.requestMatchers("/mappings/add", "/vehicles/add", "/features/add", "/countries/add", "/api/admin/**")
-				.hasRole("ADMIN").anyRequest().authenticated())
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				.hasRole("ADMIN")
+				.requestMatchers("/mappings/**", "/vehicles/**", "/features/**", "/countries/**")
+				.hasAnyRole("USER", "ADMIN")
+				.anyRequest().authenticated())
+				.exceptionHandling(ex -> ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+					response.setStatus(403);
+					response.getWriter().write("You cannot access this URL");
+				})).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
