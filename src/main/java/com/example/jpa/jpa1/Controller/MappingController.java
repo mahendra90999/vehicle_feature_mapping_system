@@ -45,7 +45,7 @@ public class MappingController {
            return result;
        } catch (Exception e) {
            log.error("Failed to add mapping: {}", e.getMessage(), e);
-           throw e;
+           throw new RuntimeException("Cannot delete or update a parent row: a foreign key constraint exception");
        }
 	}
 	
