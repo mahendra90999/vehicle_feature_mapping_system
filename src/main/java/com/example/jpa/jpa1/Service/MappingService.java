@@ -17,6 +17,7 @@ import com.example.jpa.jpa1.Dto.InfoDto;
 import com.example.jpa.jpa1.Dto.MappingDto;
 import com.example.jpa.jpa1.Dto.MappingStringDto;
 import com.example.jpa.jpa1.Dto.PageResponse;
+import com.example.jpa.jpa1.Dto.VehicleDto;
 import com.example.jpa.jpa1.Entity.ApplyMapping;
 import com.example.jpa.jpa1.Entity.Country;
 import com.example.jpa.jpa1.Entity.Feature;
@@ -24,6 +25,7 @@ import com.example.jpa.jpa1.Entity.Vehicle;
 import com.example.jpa.jpa1.Exception.DuplicateMappingException;
 import com.example.jpa.jpa1.Exception.MappingNotFoundException;
 import com.example.jpa.jpa1.Exception.ResourceNotFoundException;
+import com.example.jpa.jpa1.Exception.ForeignkeyException.ForeignkeyException;
 import com.example.jpa.jpa1.Repository.CountryDataRepository;
 import com.example.jpa.jpa1.Repository.FeatureDataRepository;
 import com.example.jpa.jpa1.Repository.MappingRepository;
@@ -51,24 +53,24 @@ public class MappingService {
 	@CacheEvict(value = "mappingCache", allEntries = true)
 	public ApiResponseDto<MappingDto> addData(MappingDto mappingDto) {
 		 log.info("Adding mapping - Vehicle ID: {}, Feature ID: {}, Country ID: {}", 
-                 mappingDto.getVehicle_id(), mappingDto.getFeature_id(), mappingDto.getCountry_id());
+                 mappingDto.getVehicleId(), mappingDto.getFeatureId(), mappingDto.getCountryId());
         
         try {
-            Vehicle vehicle = vehicleDataRepository.findById(mappingDto.getVehicle_id())
+            Vehicle vehicle = vehicleDataRepository.findById(mappingDto.getVehicleId())
                 .orElseThrow(() -> {
-                    log.error("Vehicle not found with ID: {}", mappingDto.getVehicle_id());
+                    log.error("Vehicle not found with ID: {}", mappingDto.getVehicleId());
                     return new RuntimeException("Vehicle not found");
                 });
             
-            Feature feature = featureDataRepository.findById(mappingDto.getFeature_id())
+            Feature feature = featureDataRepository.findById(mappingDto.getFeatureId())
                 .orElseThrow(() -> {
-                    log.error("Feature not found with ID: {}", mappingDto.getFeature_id());
+                    log.error("Feature not found with ID: {}", mappingDto.getFeatureId());
                     return new RuntimeException("Feature not found");
                 });
             
-            Country country = countryDataRepository.findById(mappingDto.getCountry_id())
+            Country country = countryDataRepository.findById(mappingDto.getCountryId())
                 .orElseThrow(() -> {
-                    log.error("Country not found with ID: {}", mappingDto.getCountry_id());
+                    log.error("Country not found with ID: {}", mappingDto.getCountryId());
                     return new RuntimeException("Country not found");
                 });
 
@@ -149,6 +151,63 @@ public class MappingService {
             throw e;
         }
 
+	}
+	
+	
+//	update mapping
+	public ApiResponseDto<MappingDto> updateData(int id, MappingDto dto) {
+		log.info("Updating mapping with id: {}", id);
+		
+		ApplyMapping mapping = mappingRepository.findById(id).orElseThrow(() -> {
+							log.error("mapping not found");
+							return new RuntimeException("mapping not found");
+						});
+
+	    Vehicle vehicle = vehicleDataRepository.findById(dto.getVehicleId())
+	            .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+	    Feature feature = featureDataRepository.findById(dto.getFeatureId())
+	            .orElseThrow(() -> new RuntimeException("Feature not found"));
+
+	    Country country = countryDataRepository.findById(dto.getCountryId())
+	            .orElseThrow(() -> new RuntimeException("Country not found"));
+
+		
+		log.debug("Old Mapping Data: {}", mapping);
+		
+		mapping.setVehicle(vehicle);
+		mapping.setFeature(feature);
+		mapping.setCountry(country);
+		mapping.setStatus(dto.getStatus());
+		mappingRepository.save(mapping);
+		
+		log.info("mapping updated successfully with id: {}", id);
+
+		MappingDto mappingobj = modelMapper.map(mapping, MappingDto.class);
+		
+		log.debug("Updated mapping DTO: {}", mappingobj);
+		
+		return new ApiResponseDto<MappingDto>(true,"data has been updated",mappingobj);
+	}
+	
+	
+	public ApiResponseDto<String> deleteData(int id) {
+		
+		ApplyMapping mapping = mappingRepository.findById(id).orElseThrow(() -> {
+			log.error("mapping not found");
+			return new RuntimeException("mapping not found");
+		});
+		
+			try {
+			mappingRepository.delete(mapping);
+			}catch (Exception e) {
+				log.error("Cannot delete or update a parent row: a foreign key constraint exception");
+				throw new ForeignkeyException("Cannot delete or update "+mapping.getMappingId()+": a foreign key constraint exception kindly remove mapping first.");
+			}
+			
+			log.info("Mapping deleted successfully with id: {}", id);
+		
+		return new ApiResponseDto<String>(true,"Mapping deleted successfully",null);
 	}
 	
 	

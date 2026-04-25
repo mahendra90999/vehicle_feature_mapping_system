@@ -26,7 +26,7 @@ public class VehicleController {
 	VehicleService vehicleService;
 	
 	@GetMapping("/{name}")
-	public ApiResponseDto<?> showAllData(@PathVariable String name,@RequestParam(defaultValue = "0") int page){
+	public ApiResponseDto<?> showData(@PathVariable String name,@RequestParam(defaultValue = "0") int page){
 		return vehicleService.showData(name,page);
 	}
 	

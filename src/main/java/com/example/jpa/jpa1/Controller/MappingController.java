@@ -4,7 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,10 +18,12 @@ import com.example.jpa.jpa1.Dto.InfoDto;
 import com.example.jpa.jpa1.Dto.MappingDto;
 import com.example.jpa.jpa1.Dto.MappingStringDto;
 import com.example.jpa.jpa1.Dto.PageResponse;
+import com.example.jpa.jpa1.Dto.VehicleDto;
 import com.example.jpa.jpa1.Service.MappingService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -38,7 +43,7 @@ public class MappingController {
 	@PostMapping("/add")
 	public ApiResponseDto<MappingDto> addData(@RequestBody MappingDto mappingDto) {	
 		log.info("Adding new mapping - Vehicle: {}, Feature: {}, Country: {}", 
-                mappingDto.getVehicle_id(), mappingDto.getFeature_id(), mappingDto.getCountry_id());
+                mappingDto.getVehicleId(), mappingDto.getFeatureId(), mappingDto.getCountryId());
        try {
            ApiResponseDto<MappingDto> result = mappingService.addData(mappingDto);
            log.info("Mapping added successfully.. ");
@@ -68,5 +73,17 @@ public class MappingController {
            throw e;
        }
 	}
+	
+	
+	@PutMapping("/update/{id}")
+	public ApiResponseDto<MappingDto> updateData(@PathVariable int id,@Valid @RequestBody MappingDto dto){
+		return mappingService.updateData(id,dto);
+	}
+	
+	
+	@DeleteMapping("/delete/{id}")
+	public ApiResponseDto<String> deleteData(@PathVariable int id){
+		return mappingService.deleteData(id);
+	} 
 	
 }
