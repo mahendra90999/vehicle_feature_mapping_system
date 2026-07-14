@@ -2,7 +2,7 @@
 
 ## 📌 Overview
 
-DriveMap is a Spring Boot application designed to manage vehicle-feature mappings across different countries. It demonstrates real-world backend development practices such as secure authentication, dynamic filtering, and scalable architecture.
+Spring Boot application designed to manage vehicle-feature mappings across different countries. It demonstrates real-world backend development practices such as secure authentication, dynamic filtering, and scalable architecture.
 
 ---
 
